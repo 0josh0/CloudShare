@@ -1,0 +1,25 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+        <groupId>cn.ac.iscas.oncecloudshare</groupId>
+		<artifactId>service-parent</artifactId>
+        <version>2.x-saas</version>
+        <relativePath>../</relativePath>
+    </parent>
+    
+	<artifactId>service-extensions</artifactId>
+	<packaging>pom</packaging>
+	<name>CloudShare Service Extensions</name>
+
+	<modules>
+		<module>sample-extension</module>
+		<module>msg-extension</module>
+		<module>workspace-extension</module>
+		<module>preview-extension</module>
+		<module>index-extension</module>
+		<!-- <module>device-extension</module> -->
+		<!-- <module>ldap-login-extension</module> -->
+		<!-- <module>backup-extension</module> -->
+	</modules>
+</project>

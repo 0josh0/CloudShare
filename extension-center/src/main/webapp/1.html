@@ -1,0 +1,10 @@
+<form action="api/extensions" method="post"
+    enctype="multipart/form-data">
+    <label>文件</label><input type="file" name="file" /><br/>
+	<label>名称</label><input name="name" type="text"><br/>
+	<label>版本号</label><input name="version" type="text"><br/>
+	<label>描述</label><textarea name="description"></textarea><br/>
+	<label>最低支持版本</label><input name="minSupport" type="text"><br/>
+	<label>最高支持版本</label><input name="maxSupport" type="text"><br/>
+   <input type="submit"/>
+</form>

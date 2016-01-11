@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd"
+	default-lazy-init="true">
+
+	<description>Shiro Configuration</description>
+
+	<!-- Shiro's main business-tier object for web-enabled applications  先不加权限-->
+	
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="shiroRealm" />
+		<property name="cacheManager" ref="cacheManager" />
+		<property name="sessionManager" ref="sessionManager"></property>
+	</bean>
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<property name="sessionIdCookieEnabled" value="false"></property>
+	</bean>
+
+	<!-- 項目自定义的Realm -->
+ 	<bean id="shiroRealm" class="cn.ac.iscas.oncecloudshare.service.service.shiro.ShiroRealm">
+	</bean>
+	
+	<!-- 登录模块扩展 -->
+	<bean id="loginExtensionManager" class="cn.ac.iscas.oncecloudshare.service.service.shiro.DefaultLoginExtensionManager">
+		<property name="defaultExtension" ref="userBasicLoginExtension"></property>
+	</bean>
+	<!-- 使用Basic方式登录系统用户 -->
+	<bean id="userBasicLoginExtension" class="cn.ac.iscas.oncecloudshare.service.service.shiro.UserBasicLoginExtension">
+		<property name="authorizationService" ref="globalUserAuthenticationService"></property>
+	</bean>
+	<!-- 通过ticket方式实现验证 -->
+	<bean id="ticketFilter" class="cn.ac.iscas.oncecloudshare.service.service.shiro.filter.TicketFilter">
+		<property name="authorizationService" ref="ticketAuthorizationService"></property>
+	</bean>
+	<!-- 通过ticket方式实现验证 -->
+	<bean id="ticketOrAnonFilter" class="cn.ac.iscas.oncecloudshare.service.service.shiro.filter.TicketOrAnonFilter">
+		<property name="authorizationService" ref="ticketAuthorizationService"></property>
+	</bean>
+	<bean id="ticketAuthorizationService" class="cn.ac.iscas.oncecloudshare.service.service.shiro.TicketAuthorizationService"/>
+
+	<!-- Shiro Filter -->
+	<!--
+	/adminapi/v2/** = authcBasic,roles[sys:admin]
+	-->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />		
+		<property name="filters">
+	        <map>
+	            <entry key="ticketFilter" value-ref="ticketFilter"/>
+	            <entry key="ticketOrAnonFilter" value-ref="ticketOrAnonFilter"/>
+	        </map>
+	    </property>
+		<property name="filterChainDefinitions">
+			<value>
+				/api/v2/login = anon
+				/api/v2/ticketInfo = anon
+				/api/v2/users/registration = anon
+				/api/v2/account/** = anon
+				/api/v2/extensions/** = anon
+				/api/v2/messaging/** = anon
+				/api/v2/users/search = ticketOrAnonFilter
+				/api/v2/departments/search = ticketOrAnonFilter
+				/api/v2/exts/workspaces/** = ticketOrAnonFilter
+				/api/v2/exts/preview = anon
+				/api/v2/exts/preview/** = anon
+				/api/v2/configs/** = anon
+				/api/v2/links/** = ticketOrAnonFilter
+				/api/v2/** = ticketFilter, perms[principal:user]
+				/adminapi/v2/** = ticketFilter, roles[sys:admin], perms[principal:user]
+				/contentapi/v2/** = ticketFilter
+				/** = anon
+			</value>
+		</property>
+	</bean>
+
+	<!-- 用户授权信息Cache, 采用EhCache -->
+	<bean id="cacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:cache/ehcache-shiro.xml"/>
+	</bean>
+	
+	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+	
+	<!-- AOP式方法级权限检查  -->
+<!-- 	<bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" depends-on="lifecycleBeanPostProcessor">
+		<property name="proxyTargetClass" value="true" />
+	</bean> -->
+	
+	<bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+    	<property name="securityManager" ref="securityManager"/>
+	</bean>
+</beans>

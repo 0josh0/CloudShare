@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd">
+
+	<description>JMS Configuration</description>
+
+	<!-- ActiveMQ 连接工厂 -->
+	<bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+		<property name="userName" value="${jms.username}" />   
+        <property name="password" value="${jms.password}" />
+		<property name="brokerURL" value="${jms.brokerUrl}" />
+	</bean>
+
+	<!-- Spring Caching 连接工厂 -->
+	<bean id="cachingConnectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
+		<property name="targetConnectionFactory" ref="connectionFactory" />
+		<property name="sessionCacheSize" value="20" />
+	</bean>
+
+	<!-- personal  Queue -->
+	<bean id="personalQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="${jms.queue.personal.name}" />
+	</bean>
+	<!-- space Queue -->
+	<bean id="spaceQueue" class="org.apache.activemq.command.ActiveMQQueue">
+		<constructor-arg value="${jms.queue.space.name}" />
+	</bean>
+	
+	<!-- Notif Listener -->
+	<bean id="personalListener" class="cn.ac.iscas.oncecloudshare.service.listener.PersonalNotifListener">
+	</bean>
+	
+	<!-- Notif Listener -->
+	<bean id="spaceListener" class="cn.ac.iscas.oncecloudshare.service.listener.SpaceNotifListener">
+	</bean>
+	
+	<!-- personal Container -->
+	<bean id="personalContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="destination" ref="personalQueue" />
+		<property name="messageListener" ref="personalListener" />
+		<property name="concurrentConsumers" value="1" />
+	</bean>
+	
+	<!-- space Container -->
+	<bean id="spaceContainer" class="org.springframework.jms.listener.DefaultMessageListenerContainer">
+		<property name="connectionFactory" ref="connectionFactory" />
+		<property name="destination" ref="spaceQueue" />
+		<property name="messageListener" ref="spaceListener" />
+		<property name="concurrentConsumers" value="1" />
+	</bean>
+	
+	
+	
+</beans>

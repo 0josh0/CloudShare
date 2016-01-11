@@ -1,0 +1,68 @@
+崔礼阳
+20140508
+	1. 增加oss的配置项aliyun.endpoint
+20140515
+	1. 多租户下删除标签出错的问题处理
+	2. 多租户重置密码可以发送邮件了
+20140523
+	1. 自动登录，修改数据库
+	CREATE TABLE `ocs_remember_me` (
+	  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+	  `create_time` datetime DEFAULT NULL,
+	  `update_time` datetime DEFAULT NULL,
+	  `expire_at` datetime NOT NULL,
+	  `token` varchar(255) NOT NULL,
+	  `user_id` bigint(20) NOT NULL,
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY(`token`),
+	  KEY(`user_id`),
+	  CONSTRAINT FOREIGN KEY (`user_id`) REFERENCES `ocs_user` (`id`)
+	) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+	2. 多租户重置密码
+		a. 修改全局配置 user.reset_password.web_url为/findpass/${token}
+20140527
+	1.多租户工作空间标签
+CREATE TABLE `ocs_space_tag` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `create_time` datetime DEFAULT NULL,
+  `update_time` datetime DEFAULT NULL,
+  `files_count` bigint(20) NOT NULL,
+  `order_index` int(11) NOT NULL,
+  `title` varchar(32) NOT NULL,
+  `space_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY (`title`,`space_id`),
+  CONSTRAINT FOREIGN KEY (`space_id`) REFERENCES `ocs_space` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
+CREATE TABLE `ocs_space_tag_file` (
+  `file_id` bigint(20) NOT NULL,
+  `tag_id` bigint(20) NOT NULL,
+  UNIQUE KEY (`file_id`,`tag_id`),
+  CONSTRAINT FOREIGN KEY (`file_id`) REFERENCES `ocs_space_file` (`id`),
+  CONSTRAINT FOREIGN KEY (`tag_id`) REFERENCES `ocs_space_tag` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+20140528
+	1. 多租户不能预览txt问题解决
+20140606
+	1.use cs_tenant_xx;
+alter table ocs_team add room_id bigint(20);
+20140609
+	1.use cs_tenant_xx;
+CREATE TABLE `ocs_file_comment_at` (
+  `comment_id` bigint(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
+  CONSTRAINT FOREIGN KEY (`comment_id`) REFERENCES `ocs_file_comment` (`id`),
+  CONSTRAINT FOREIGN KEY (`user_id`) REFERENCES `ocs_user` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+20140624
+1. use cs_tenant_xx;
+alter table ocs_space_file add downloads bigint(20) NOT NULL DEFAULT '0' after follows;
+李卓
+20140516
+    1. fix 创建租户数量限定
+    2.添加文件（夹）事件
+    3. fix 个人足迹 记录 显示BUG
+    
+李卓
+20140519
+  1.fix ticket 不过期BUG，现在过期时间为一个小时

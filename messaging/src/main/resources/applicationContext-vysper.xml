@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"  
+	xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd"
+	>
+
+    <bean id="tcpEndpoint" class="org.apache.vysper.mina.TCPEndpoint">
+    	<property name="port" value="${xmpp.port}" />
+    </bean>
+    
+    <bean id="boshEndpoint" class="org.apache.vysper.xmpp.extension.xep0124.BoshEndpoint">
+        <property name="accessControlAllowOrigin">
+            <list><value>*</value></list>
+        </property>
+        <property name="port" value="${bosh.port}" />
+        <property name="contextPath" value="/" />
+    </bean>
+    
+    <bean id="xmppServer" class="cn.ac.iscas.oncecloudshare.messaging.xmpp.server.OcsXmppServer"
+          init-method="init" destroy-method="destroy">
+        <constructor-arg value="${domain}"/>
+        <property name="endpoints">
+            <list>
+                <ref bean="tcpEndpoint"/>
+                <ref bean="boshEndpoint"/>
+            </list>
+        </property>
+        <property name="storageProviderRegistry" ref="ocsStorageProviderRegistry" />
+        <property name="certificateFile" value="WEB-INF/bogus_mina_tls.cert" />
+        <property name="certificatePassword" value="boguspw" />
+        <property name="modules" >
+            <list>
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0092_software_version.SoftwareVersionModule"/>
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0202_entity_time.EntityTimeModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0119_xmppping.XmppPingModule" />
+                <bean class="cn.ac.iscas.oncecloudshare.messaging.xmpp.muc.OcsMucModule"/>
+                
+<!--                	<bean class="org.apache.vysper.xmpp.modules.extension.xep0045_muc.MUCModule" /> -->
+              	
+                <!-- <bean class="org.apache.vysper.xmpp.modules.extension.xep0054_vcardtemp.VcardTempModule" />
+                
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0049_privatedata.PrivateDataModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0050_adhoc_commands.AdhocCommandsModule" />
+                <bean class="org.apache.vysper.xmpp.modules.extension.xep0060_pubsub.PublishSubscribeModule" /> -->
+                
+                <!-- <bean class="org.apache.vysper.xmpp.modules.extension.xep0133_service_administration.ServiceAdministrationModule" >
+                    <property name="addAdmins">
+                        <list><value>admin@vysper.org</value></list>
+                    </property>
+                </bean> -->
+                
+            </list>
+        </property>
+    </bean>
+    
+</beans>

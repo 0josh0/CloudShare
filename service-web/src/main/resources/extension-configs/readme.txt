@@ -1,0 +1,1 @@
+此目录用于放置extension的默认配置，具体格式参考default-config.properties

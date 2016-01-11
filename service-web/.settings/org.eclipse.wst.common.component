@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="service-web">
+        <wb-resource deploy-path="/" source-path="/target/m2e-jee/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <dependent-module archiveName="service-core-2.x-saas.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/service-core/service-core">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="service-main-2.x-saas.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/service-main/service-main">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="aliyun-storage-2.x-saas.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/aliyun-storage/aliyun-storage">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="workspace-extension-2.x-saas.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/workspace-extension/workspace-extension">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="service"/>
+        <property name="java-output-path" value="/service-web/target/classes"/>
+    </wb-module>
+</project-modules>

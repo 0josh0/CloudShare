@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd"
+	default-lazy-init="true">
+
+	<description>Shiro安全配置</description>
+
+	<!-- Shiro's main business-tier object for web-enabled applications -->
+	<bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+		<property name="realm" ref="shiroRealm" />
+		<property name="cacheManager" ref="shiroEhcacheManager" />
+		<property name="sessionManager" ref="sessionManager"></property>
+	</bean>
+	<bean id="sessionManager" class="org.apache.shiro.web.session.mgt.DefaultWebSessionManager">
+		<property name="sessionIdCookieEnabled" value="false"></property>
+	</bean>
+	
+ 	<bean id="shiroRealm" class="cn.ac.iscas.oncecloudshare.service.service.shiro.ShiroRealm">
+	</bean>
+	
+	<bean id="ticketAuthorizationService" class="cn.ac.iscas.oncecloudshare.service.service.shiro.TicketAuthorizationService"/>
+	
+	<!-- 通过ticket方式实现验证 -->
+	<bean id="ticketFilter" class="cn.ac.iscas.oncecloudshare.service.service.shiro.filter.TicketFilter">
+		<property name="authorizationService" ref="ticketAuthorizationService"></property>
+	</bean>
+	
+	<!-- Shiro Filter -->
+	<bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+		<property name="securityManager" ref="securityManager" />
+		<property name="filters">
+	        <map>
+	            <entry key="ticketFilter" value-ref="ticketFilter"/>
+	        </map>
+	    </property>
+		<property name="filterChainDefinitions">
+			<value>
+				/ = anon
+				/error/** = anon
+				/api/v2/users/** = ticketFilter
+				/api/v2/workspace/** = ticketFilter
+			</value>
+		</property>
+	</bean>
+	
+	<!-- 用户授权信息Cache, 采用EhCache -->
+	<bean id="shiroEhcacheManager" class="org.apache.shiro.cache.ehcache.EhCacheManager">
+		<property name="cacheManagerConfigFile" value="classpath:cache/ehcache-shiro.xml"/>
+	</bean>
+	
+	<!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+	<bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+</beans>
